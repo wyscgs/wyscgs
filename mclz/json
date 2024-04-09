@@ -1,0 +1,37 @@
+{
+'data':
+    {
+    'url': 'AddFoodfirmfillin',
+    'paramdata':
+         {'DistNo': 'XS20231218005359',
+          'DistSupply': '南宁威耀集采配供链管理有限公司',
+          'DistDate': datetime.datetime(2023, 12, 18, 0, 0),
+          'SupplyMan': '王叶平', 'FirmID': '13737120299',
+          'PurchaseMan': '黄小桂', 'CheckMan': '黄小桂',
+          'FillInDatetime': datetime.datetime(2023, 12, 18, 0, 0),
+          'FD_FoodfirmfillindetailInfos': [{
+                'OrderQuantity': Decimal('7.000'),
+                'DeliveryQuantity': Decimal('7.000'),
+                'CheckQuantity': Decimal('7.000'),
+                'Price': Decimal('112.50'),
+                'ProductDate': datetime.datetime(2023, 12, 17, 0, 0),
+                'ProductStandardCode': '20231215001374',
+                'FD_FoodInfo': {
+                        'product_code': '000964',
+                        'ProductFirmName': '广西壮美那食品有限公司',
+                        'GenericCode': '000964',
+                        'GenericName': '猪排骨条（冷鲜）2.5kg',
+                        'FoodTypeCode': '0102',
+                        'FoodTypeName': '畜类',
+                        'Specification': '2.5kg',
+                        'Unit': '袋',
+                        'ShelfLife': 3,
+                        'ProductImageUrl': '/product/2021/12/20/0001/30204109-3640-4ac3-a700-4ae80e6a2f61.jpg'
+                 },
+                 'FD_FoodfirmfillindtlfileInfos': [{
+                 'FileName': '0000000.png',
+                 'FileUrl': '/batch/CR20/23/12/CR202312170334/deb3f2d4-e41d-41fd-b45f-9737277ae869.png'}]}
+                 ]}
+    }
+}
+
