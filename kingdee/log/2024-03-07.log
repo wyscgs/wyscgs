@@ -1,0 +1,477 @@
+[2024-03-07 11:08:06.795024] 开始
+[2024-03-07 11:08:06.796035] 发送任务定时任务开始执行...
+[2024-03-07 11:08:06.812573] connect to MySQL:Success
+[2024-03-07 11:08:06.833026] Disconnect mysql
+[2024-03-07 11:08:06.845003] connect to MySQL:Success
+[2024-03-07 11:08:06.845003] connect to MySQL:Success
+[2024-03-07 11:08:06.845003] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 11:08:06.845003] 线程2: 第1个订单拼接字符串开始！
+[2024-03-07 11:08:06.873917] Disconnect mysql
+[2024-03-07 11:08:06.874923] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 11:08:06.886713] connect to MySQL:Success
+[2024-03-07 11:08:06.887744] 线程1: 第1个订单发送开始
+[2024-03-07 11:08:06.945585] 线程1: 第1个订单请求失败，您的登录已过期，请重新登录
+[2024-03-07 11:08:06.948207] {
+  "data": {
+    "url": "AddFoodfirmfillin",
+    "paramdata": {
+      "FD_FoodfirmfillinfileInfos": [
+        {
+          "FileTypeId": 1,
+          "FileName": "",
+          "FileUrl": ""
+        }
+      ],
+      "FD_FoodfirmfillindetailInfos": [
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "01070124",
+            "GenericName": "圣康源细粉条5kg",
+            "FoodTypeCode": "0107",
+            "FoodTypeName": "早餐面点",
+            "Specification": "5kg",
+            "Unit": "袋",
+            "ShelfLife": 1,
+            "ProductFirmName": "横县圣康源食品加工厂",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2022/09/13/0001/91a2fa48-c4a1-4796-8743-d2632abaca76.jpg"
+          },
+          "OrderQuantity": 210.0,
+          "DeliveryQuantity": 210.0,
+          "CheckQuantity": 190.0,
+          "Price": 13.0,
+          "ProductDate": "2024-03-05 00:00:00",
+          "ProductStandardCode": "20240304004308",
+          "FD_FoodfirmfillindtlfileInfos": []
+        }
+      ],
+      "DistNo": "XS20240306000070",
+      "DistSupplyName": "南宁威耀集采配供链管理有限公司",
+      "DistDate": "2024-03-06",
+      "FirmID": "5507315140516222473",
+      "PurchaseMan": "颜金生",
+      "CheckMan": "颜金生",
+      "FillInDatetime": "2024-03-06 00:00:00"
+    }
+  }
+}
+[2024-03-07 11:08:07.117112] Disconnect mysql
+[2024-03-07 11:08:07.124261] connect to MySQL:Success
+[2024-03-07 11:08:07.125288] 线程1: 第2个订单拼接字符串开始！
+[2024-03-07 11:08:07.152638] Disconnect mysql
+[2024-03-07 11:08:07.154222] 线程1: 第2个订单拼接字符串结束
+[2024-03-07 11:08:07.162400] connect to MySQL:Success
+[2024-03-07 11:08:07.162400] 线程1: 第2个订单发送开始
+[2024-03-07 11:08:07.238385] 线程1: 第2个订单请求失败，您的登录已过期，请重新登录
+[2024-03-07 11:08:07.239424] {
+  "data": {
+    "url": "AddFoodfirmfillin",
+    "paramdata": {
+      "FD_FoodfirmfillinfileInfos": [
+        {
+          "FileTypeId": 1,
+          "FileName": "",
+          "FileUrl": ""
+        }
+      ],
+      "FD_FoodfirmfillindetailInfos": [
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "01070124",
+            "GenericName": "圣康源细粉条5kg",
+            "FoodTypeCode": "0107",
+            "FoodTypeName": "早餐面点",
+            "Specification": "5kg",
+            "Unit": "袋",
+            "ShelfLife": 1,
+            "ProductFirmName": "横县圣康源食品加工厂",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2022/09/13/0001/91a2fa48-c4a1-4796-8743-d2632abaca76.jpg"
+          },
+          "OrderQuantity": 210.0,
+          "DeliveryQuantity": 210.0,
+          "CheckQuantity": 190.0,
+          "Price": 13.0,
+          "ProductDate": "2024-03-05 00:00:00",
+          "ProductStandardCode": "20240304004308",
+          "FD_FoodfirmfillindtlfileInfos": []
+        }
+      ]
+    }
+  }
+}
+[2024-03-07 11:08:07.359551] Disconnect mysql
+[2024-03-07 11:08:07.378153] connect to MySQL:Success
+[2024-03-07 11:08:07.378153] 线程1: 第3个订单拼接字符串开始！
+[2024-03-07 11:08:09.556436] Disconnect mysql
+[2024-03-07 11:08:09.557436] 线程2: 第1个订单拼接字符串结束
+[2024-03-07 11:08:09.571245] connect to MySQL:Success
+[2024-03-07 11:08:09.571245] 线程2: 第1个订单发送开始
+[2024-03-07 11:08:09.677874] 线程2: 第1个订单请求失败，您的登录已过期，请重新登录
+[2024-03-07 11:08:09.682514] {
+  "data": {
+    "url": "AddFoodfirmfillin",
+    "paramdata": {
+      "FD_FoodfirmfillinfileInfos": [
+        {
+          "FileTypeId": 1,
+          "FileName": "",
+          "FileUrl": ""
+        }
+      ],
+      "FD_FoodfirmfillindetailInfos": [
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "000401",
+            "GenericName": "大白菜",
+            "FoodTypeCode": "0101",
+            "FoodTypeName": "蔬菜",
+            "Specification": "散装",
+            "Unit": "kg",
+            "ShelfLife": 3,
+            "ProductFirmName": "蔬菜分拣中心",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/08/27/0001/896d2d38-641b-40b7-b4a8-fd7ecb17c2fd.png"
+          },
+          "OrderQuantity": 40.0,
+          "DeliveryQuantity": 40.0,
+          "CheckQuantity": 40.0,
+          "Price": 2.9,
+          "ProductDate": "2024-03-06 00:00:00",
+          "ProductStandardCode": "20240306002828",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "大白菜2024.3.6jpg.png",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403060628/373b04bc-e33e-43af-9b5a-43f8730ecf9b.png"
+            },
+            {
+              "FileName": "20240306快检报告单（果蔬）.pdf",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/2024/03/06/5146387c-b15e-49b0-b268-f2679da3bf66.pdf"
+            }
+          ]
+        },
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "000472",
+            "GenericName": "香葱",
+            "FoodTypeCode": "0101",
+            "FoodTypeName": "蔬菜",
+            "Specification": "散装",
+            "Unit": "kg",
+            "ShelfLife": 3,
+            "ProductFirmName": "广西南糖增润供应链管理有限公司",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/08/27/0001/7e0160e2-d3fe-45a9-ae47-d9b8cf81e226.png"
+          },
+          "OrderQuantity": 2.5,
+          "DeliveryQuantity": 2.52,
+          "CheckQuantity": 2.5,
+          "Price": 11.0,
+          "ProductDate": "2024-03-06 00:00:00",
+          "ProductStandardCode": "20240306001898",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "增润蔬菜2024.3.6.jpg.JPG",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403060494/be1d74b4-01c1-4310-82a5-8c8ef8590491.JPG"
+            },
+            {
+              "FileName": "20240306快检报告单（果蔬）.pdf",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/2024/03/06/2b7915ac-9c96-4739-adab-3eab4515c1ab.pdf"
+            }
+          ]
+        },
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "001690",
+            "GenericName": "鸡蛋（个）",
+            "FoodTypeCode": "0104",
+            "FoodTypeName": "蛋类",
+            "Specification": "1个",
+            "Unit": "个",
+            "ShelfLife": 30,
+            "ProductFirmName": "广西正大卜蜂食品有限公司",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/08/27/0001/154b97c9-6214-428c-b050-bf4b7256587c.png"
+          },
+          "OrderQuantity": 800.0,
+          "DeliveryQuantity": 800.0,
+          "CheckQuantity": 800.0,
+          "Price": 0.74,
+          "ProductDate": "2024-03-02 00:00:00",
+          "ProductStandardCode": "20240302002077",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "鸡蛋2024.3.2.jpg",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403030303/10781e74-ce4a-4f27-b5f5-03c477b6beb6.jpg"
+            },
+            {
+              "FileName": "20240303快检报告单（果蔬）.pdf",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/2024/03/03/3d803c69-24a1-455a-87ba-e831a6f4e18b.pdf"
+            }
+          ]
+        },
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "001822",
+            "GenericName": "猪后腿肉（冷鲜）5kg",
+            "FoodTypeCode": "0102",
+            "FoodTypeName": "畜类",
+            "Specification": "5kg",
+            "Unit": "袋",
+            "ShelfLife": 3,
+            "ProductFirmName": "漯河双汇食品销售有限公司",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/12/20/0001/d7c9a444-c175-4db8-86f6-84c9f1d0938b.jpg"
+          },
+          "OrderQuantity": 3.0,
+          "DeliveryQuantity": 3.0,
+          "CheckQuantity": 3.0,
+          "Price": 108.0,
+          "ProductDate": "2024-03-06 00:00:00",
+          "ProductStandardCode": "20240306000337",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "20240306快检报告单（肉类）.pdf",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/2024/03/06/fa93e1b1-2247-40c9-8474-aa7d1e8f36e2.pdf"
+            },
+            {
+              "FileName": "双汇猪分割肉2024.3.6.jpg.JPG",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403060572/ca7fd18f-ed60-4f0d-804d-9a89d5472338.JPG"
+            }
+          ]
+        }
+      ],
+      "DistNo": "XS20240307001563",
+      "DistSupplyName": "南宁威耀集采配供链管理有限公司",
+      "DistDate": "2024-03-07",
+      "FirmID": "5007128265002488154",
+      "PurchaseMan": "蓝耀义",
+      "CheckMan": "蓝耀义",
+      "FillInDatetime": "2024-03-07 00:00:00"
+    }
+  }
+}
+[2024-03-07 11:08:09.776296] Disconnect mysql
+[2024-03-07 11:08:09.790180] connect to MySQL:Success
+[2024-03-07 11:08:09.790715] 线程2: 第2个订单拼接字符串开始！
+[2024-03-07 11:08:10.539062] Disconnect mysql
+[2024-03-07 11:08:10.540098] 线程1: 第3个订单拼接字符串结束
+[2024-03-07 11:08:10.552575] connect to MySQL:Success
+[2024-03-07 11:08:10.553568] 线程1: 第3个订单发送开始
+[2024-03-07 11:08:10.657977] 线程1: 第3个订单请求失败，您的登录已过期，请重新登录
+[2024-03-07 11:08:10.661028] {
+  "data": {
+    "url": "AddFoodfirmfillin",
+    "paramdata": {
+      "FD_FoodfirmfillinfileInfos": [
+        {
+          "FileTypeId": 1,
+          "FileName": "",
+          "FileUrl": ""
+        }
+      ],
+      "FD_FoodfirmfillindetailInfos": [
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "000433",
+            "GenericName": "土豆",
+            "FoodTypeCode": "0101",
+            "FoodTypeName": "蔬菜",
+            "Specification": "散装",
+            "Unit": "kg",
+            "ShelfLife": 3,
+            "ProductFirmName": "蔬菜分拣中心",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/08/13/0001/00d95d73-7262-45c5-ad4b-692774ea9016.jpg"
+          },
+          "OrderQuantity": 19.0,
+          "DeliveryQuantity": 19.0,
+          "CheckQuantity": 19.0,
+          "Price": 4.0,
+          "ProductDate": "2024-03-05 00:00:00",
+          "ProductStandardCode": "20240305002378",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "土豆.jpg",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403050399/9ed8681e-7ade-4cb5-8cad-0db5512a0f5c.jpg"
+            }
+          ]
+        },
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "000472",
+            "GenericName": "香葱",
+            "FoodTypeCode": "0101",
+            "FoodTypeName": "蔬菜",
+            "Specification": "散装",
+            "Unit": "kg",
+            "ShelfLife": 3,
+            "ProductFirmName": "广西南糖增润供应链管理有限公司",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/08/27/0001/7e0160e2-d3fe-45a9-ae47-d9b8cf81e226.png"
+          },
+          "OrderQuantity": 1.0,
+          "DeliveryQuantity": 1.0,
+          "CheckQuantity": 1.0,
+          "Price": 11.0,
+          "ProductDate": "2024-03-05 00:00:00",
+          "ProductStandardCode": "20240305001802",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "增润蔬菜.jpg",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403050555/9740b830-cf14-4a47-b74c-3eba3a232faf.jpg"
+            }
+          ]
+        },
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "000786",
+            "GenericName": "猪瘦肉（冷鲜）2.5kg",
+            "FoodTypeCode": "0102",
+            "FoodTypeName": "畜类",
+            "Specification": "2.5kg",
+            "Unit": "袋",
+            "ShelfLife": 3,
+            "ProductFirmName": "南宁威链云产业园运营管理服务有限公司（畜类）",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/12/20/0001/cd92bf22-0b4b-4d86-8ed7-7a2976424d86.jpg"
+          },
+          "OrderQuantity": 1.0,
+          "DeliveryQuantity": 1.0,
+          "CheckQuantity": 1.0,
+          "Price": 69.0,
+          "ProductDate": "2024-03-05 00:00:00",
+          "ProductStandardCode": "20240304001884",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "f95f7172783a48d234e3a2e7073ee16.png",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403050379/a083d4dc-f1be-4c45-b31a-4ecda563caf3.png"
+            },
+            {
+              "FileName": "4f80792bb5373a9302de6a45e83ea98.png",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403050379/28897daa-b839-4cf8-a654-fd5e5d7aa902.png"
+            }
+          ]
+        },
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "000787",
+            "GenericName": "猪瘦肉（冷鲜）5kg",
+            "FoodTypeCode": "0102",
+            "FoodTypeName": "畜类",
+            "Specification": "5kg",
+            "Unit": "袋",
+            "ShelfLife": 3,
+            "ProductFirmName": "南宁威链云产业园运营管理服务有限公司（畜类）",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/12/20/0001/209586fd-4d83-4202-9593-adfcf5a1ee69.jpg"
+          },
+          "OrderQuantity": 1.0,
+          "DeliveryQuantity": 1.0,
+          "CheckQuantity": 1.0,
+          "Price": 138.0,
+          "ProductDate": "2024-03-05 00:00:00",
+          "ProductStandardCode": "20240304001885",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "f95f7172783a48d234e3a2e7073ee16.png",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403050379/e07bd743-b4f3-482c-823c-031d254ac46a.png"
+            },
+            {
+              "FileName": "4f80792bb5373a9302de6a45e83ea98.png",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/03/CR202403050379/3ec65618-6bed-41d4-8fcc-e13f54b8d4dc.png"
+            }
+          ]
+        },
+        {
+          "FD_FoodInfo": {
+            "GenericCode": "001690",
+            "GenericName": "鸡蛋（个）",
+            "FoodTypeCode": "0104",
+            "FoodTypeName": "蛋类",
+            "Specification": "1个",
+            "Unit": "个",
+            "ShelfLife": 30,
+            "ProductFirmName": "广西立腾农牧发展有限公司",
+            "ProductImageUrl": "https://erp.nnwysc.com/eos-download/accessory/product/2021/08/27/0001/154b97c9-6214-428c-b050-bf4b7256587c.png"
+          },
+          "OrderQuantity": 390.0,
+          "DeliveryQuantity": 390.0,
+          "CheckQuantity": 390.0,
+          "Price": 0.74,
+          "ProductDate": "2024-02-25 00:00:00",
+          "ProductStandardCode": "20240225002114",
+          "FD_FoodfirmfillindtlfileInfos": [
+            {
+              "FileName": "49d4a5871967cb2ccc4915a69ebee9d.jpg",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/02/CR202402260307/4636964b-5fd3-4f0f-a15e-6d0a4a55b7f0.jpg"
+            },
+            {
+              "FileName": "49d4a5871967cb2ccc4915a69ebee9d.jpg",
+              "FileUrl": "https://erp.nnwysc.com/eos-download/accessory/batch/CR20/24/02/CR202402260307/4636964b-5fd3-4f0f-a15e-6d0a4a55b7f0.jpg"
+            }
+          ]
+        }
+      ],
+      "DistNo": "XS20240306004248",
+      "DistSupplyName": "南宁威耀集采配供链管理有限公司",
+      "DistDate": "2024-03-06",
+      "FirmID": "4664001153938372130",
+      "PurchaseMan": "杨锡海",
+      "CheckMan": "杨锡海",
+      "FillInDatetime": "2024-03-06 00:00:00"
+    }
+  }
+}
+[2024-03-07 11:08:10.754750] Disconnect mysql
+[2024-03-07 11:08:10.770244] connect to MySQL:Success
+[2024-03-07 11:08:10.771257] 线程1: 第4个订单拼接字符串开始！
+[2024-03-07 11:08:46.655813] 开始
+[2024-03-07 11:08:46.655813] 结束
+[2024-03-07 16:53:40.002403] 开始
+[2024-03-07 16:53:40.008512] connect to MySQL:Success
+[2024-03-07 16:53:40.009521] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 16:53:40.043584] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 16:53:40.044613] 结束
+[2024-03-07 17:14:55.707998] 开始
+[2024-03-07 17:14:55.714766] connect to MySQL:Success
+[2024-03-07 17:14:55.715804] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:14:55.748098] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:14:55.749137] 结束
+[2024-03-07 17:40:35.183956] 开始
+[2024-03-07 17:40:35.193690] connect to MySQL:Success
+[2024-03-07 17:40:35.194699] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:40:35.226894] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:40:35.623741] Disconnect mysql
+[2024-03-07 17:40:35.625318] 结束
+[2024-03-07 17:41:25.750153] 开始
+[2024-03-07 17:41:25.765642] connect to MySQL:Success
+[2024-03-07 17:41:25.766709] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:41:25.800166] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:41:25.809603] Disconnect mysql
+[2024-03-07 17:41:25.810669] 结束
+[2024-03-07 17:45:20.179392] 开始
+[2024-03-07 17:45:20.186069] connect to MySQL:Success
+[2024-03-07 17:45:20.187083] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:45:20.223148] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:45:21.405708] 结束
+[2024-03-07 17:46:30.478404] 开始
+[2024-03-07 17:46:30.571493] connect to MySQL:Success
+[2024-03-07 17:46:30.572530] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:46:30.605611] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:46:30.708787] 结束
+[2024-03-07 17:46:40.371255] 开始
+[2024-03-07 17:46:40.378346] connect to MySQL:Success
+[2024-03-07 17:46:40.379391] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:46:40.424228] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:46:40.555990] 结束
+[2024-03-07 17:49:07.253507] 开始
+[2024-03-07 17:49:07.260213] connect to MySQL:Success
+[2024-03-07 17:49:07.260213] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:49:07.292659] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:49:07.436980] 结束
+[2024-03-07 17:49:47.320220] 开始
+[2024-03-07 17:49:47.327390] connect to MySQL:Success
+[2024-03-07 17:49:47.327932] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:49:47.363074] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:49:47.599357] 结束
+[2024-03-07 17:55:00.615474] 开始
+[2024-03-07 17:55:00.623239] connect to MySQL:Success
+[2024-03-07 17:55:00.623239] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:55:00.656261] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:55:00.830151] 结束
+[2024-03-07 17:59:42.296173] 开始
+[2024-03-07 17:59:42.318841] connect to MySQL:Success
+[2024-03-07 17:59:42.318841] 线程1: 第1个订单拼接字符串开始！
+[2024-03-07 17:59:42.351889] 线程1: 第1个订单拼接字符串结束
+[2024-03-07 17:59:42.618620] 结束
