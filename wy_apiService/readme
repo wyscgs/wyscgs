@@ -1,0 +1,6 @@
+server.py 为主文件
+dbconnect.qy  和  server.py 为链接数据库的文件 其中 dbconnect.qy 是罗X编写的  Server.py  是蓝波编写的
+程序的端口是用8000端口，域名为  http://msg.nnwysc.com:8000
+write_log 是封装写日志的文件，日志写在C:/wy_ApiServiceLog 中，每天生成一个，有必要就写入日志
+
+这个项目是统一威耀写的对外接口 ，每个人写的接口建议命名规则为项目名称_api.py  如：kingdee_api.py
