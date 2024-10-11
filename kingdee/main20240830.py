@@ -136,13 +136,12 @@ def task_send_estimated_payables():
         case when d.fcode='F001' then '010H0J'   when d.fcode='F002' then '010H0J0A'   when d.fcode='F003' then '010H0J0B'
         when d.fcode='F004' then '010H0J0F'   when d.fcode='F005' then '010H0J0G'   when d.fcode='F006' then '010H0J0L'
         when d.fcode='F007' then '010H0J0M'  else '010H0J' end  as recorg ,
-        '1001'payproperty,'JSF299' settlementtype,'' department,'HAIDING-002024'creator,counterpart_unit_code  asstact ,'CNY'  currency,
+        '2001'payproperty,'JSF299' settlementtype,'01050106' department,'HAIDING-002024'creator,counterpart_unit_code  asstact ,'CNY'  currency,
         'bd_supplier' asstacttype,'CREDIT'  paymode,    
         case when b.direct='outcome' then CONVERT(-b.agg_total, FLOAT)   else CONVERT(b.agg_total, FLOAT) end  as   invoiceamt,
         ''remark
         from  e_account b,e_warehouse_org d
         where   b.warehouse_code=d.wrh_code 
-        and  b.bill_number=%s
         and  b.bill_number=%s
     ) a
     GROUP BY  sourceOrg,sourceSys,sourceBillPk,billtypeid,isestimated,org,recorg,payproperty,settlementtype,
@@ -156,11 +155,10 @@ def task_send_estimated_payables():
         case when direct='outcome' then  CONVERT(-product_quantity, FLOAT) else CONVERT(product_quantity, FLOAT) end as  quantity
         from  e_account
         where  bill_number=%s
-        and  bill_number=%s
     ) a 
     group by tax_rate,e_material,product_price
     """
-    url = 'http://180.141.91.139:8023/ierp/kapi/app/ap/APBusBillWebApiPlugin?access_token='
+    url = 'http://180.141.91.139:8023/ierp/kapi/app/ap/ApBusbillWebApiService?access_token='
     key_name = '财务暂估应付单'
     send_messageto_kindee.send_message(key_name, exec_sql, exec_sql1, 2, url)
 
@@ -223,19 +221,27 @@ def task_send_digital_ticketing():
 	includeTaxFlag,pushMatchRules,fillValueRule,textField1,textField2
     """
     exec_sql1 = """
-    SELECT  sum(amount) amount,sum(quantity) quantity,detailId,goodsCode,lineProperty,price,taxRate,extraField
+    SELECT  round(sum(amount),2) amount,sum(quantity) quantity,detailId,goodsCode,lineProperty,price,taxRate,extraField
 	from (
-    SELECT  case when direct='outcome' then CONVERT(-a.agg_total, FLOAT)   else CONVERT(a.agg_total, FLOAT) end  as amount,
-    a.bill_number detailId,CONCAT('WYWL-',a.product_code)  goodsCode, '2'  lineProperty,CONVERT(a.product_price, FLOAT)  price,
-    case when a.direct='outcome' then  CONVERT(-a.product_quantity, FLOAT) else CONVERT(a.product_quantity, FLOAT) end as  quantity,
-    CONVERT(a.tax_rate, FLOAT) taxRate,
-	case when c.one_code='03' or c.one_code='04' or c.one_code='05' or c.one_code='06' then  IF(RIGHT(one_name, 1) = '类', one_name, CONCAT(one_name, '类'))
-	when c.one_code='01' or c.one_code='02' then  IF(RIGHT(two_name, 1) = '类', two_name, CONCAT(two_name, '类'))
-	else '其他'  end as extraField
-    from  e_account a,e_product b,wy_kingdee_sort c
-    where  a.product_code=b.code
-	and  b.category_code=c.two_code
-	and  a.bill_number=%s
+        SELECT  CONVERT(price*receive_quantity,FLOAT) amount,a.dist_bill_number detailId,CONCAT('WYWL-',a.product_code)  goodsCode, 
+        '2'  lineProperty,CONVERT(a.price, FLOAT)  price,CONVERT(a.receive_quantity, FLOAT)  quantity,CONVERT(a.tax_rate, FLOAT) taxRate,
+        case when c.one_code='03' or c.one_code='04' or c.one_code='05' or c.one_code='06' then  IF(RIGHT(one_name, 1) = '类', one_name, CONCAT(one_name, '类'))
+        when c.one_code='01' or c.one_code='02' then  IF(RIGHT(two_name, 1) = '类', two_name, CONCAT(two_name, '类'))
+        else '其他'  end as extraField
+        from  e_dist_line a,e_product b,wy_kingdee_sort c
+        where  a.product_code=b.code
+        and  b.category_code=c.two_code
+        and  a.dist_bill_number=%s
+        union all
+        SELECT  -CONVERT(price*receipt_quantity,FLOAT) amount,a.sale_return_bill_number detailId,CONCAT('WYWL-',a.product_code)  goodsCode, 
+        '2'  lineProperty,CONVERT(a.price, FLOAT)  price,-CONVERT(a.receipt_quantity, FLOAT)  quantity,CONVERT(a.tax_rate, FLOAT) taxRate,
+        case when c.one_code='03' or c.one_code='04' or c.one_code='05' or c.one_code='06' then  IF(RIGHT(one_name, 1) = '类', one_name, CONCAT(one_name, '类'))
+        when c.one_code='01' or c.one_code='02' then  IF(RIGHT(two_name, 1) = '类', two_name, CONCAT(two_name, '类'))
+        else '其他'  end as extraField
+        from  e_sale_return_line a,e_product b,wy_kingdee_sort c
+        where  a.product_code=b.code
+        and  b.category_code=c.two_code
+        and  a.sale_return_bill_number=%s
 	)  a
 	group by  detailId,goodsCode,lineProperty,price,taxRate,extraField
     """
@@ -253,7 +259,7 @@ def task_send_digital_ticketing_return():
     and  bill_number=%s	
     """
     exec_sql1 = """		
-
+    
     """
     url = 'http://180.141.91.139:8023/ierp/kapi/app/sim/openApi?access_token='
     key_name = '开票申请单撤回'
@@ -276,11 +282,11 @@ if __name__ == '__main__':
     # 财务暂估应收单
     # task_send_estimated_receivables()
     # 财务暂估应付单
-    task_send_estimated_payables()
+    # task_send_estimated_payables()
     # 财务应付单
     # task_send_financial_payables()
     # 开票申请单
-    # task_send_digital_ticketing()
+    task_send_digital_ticketing()
     # 开票申请单撤回
     # task_send_digital_ticketing_return()
     # while True:

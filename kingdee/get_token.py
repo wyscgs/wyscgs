@@ -16,12 +16,12 @@ def make_api_request(url, headers, payload):
 
 
 def savetoken():
-    getAppToken_url = "http://180.141.91.139:8022/ierp/api/getAppToken.do"
+    getAppToken_url = "http://180.141.91.139:8023/ierp/api/getAppToken.do"
     getAppToken_payload = {
-        "appId": "hdjc",
-        "appSecuret": "Kingdee.123456789",
-        "tenantid": "wnjtdev",
-        "accountId": "970282446551518208",
+        "appId": "openapi_app",
+        "appSecuret": "NNWNtzjt20240321!",
+        "tenantid": "wnjtsit",
+        "accountId": "1938351379391184896",
         "language": "zh_CN"
     }
     headers = {
@@ -33,13 +33,13 @@ def savetoken():
         response_apptoken = (requests.post(getAppToken_url, json=getAppToken_payload, headers=headers)).json()
         if response_apptoken and 'data' in response_apptoken and 'app_token' in response_apptoken['data']:
             apptoken = response_apptoken['data']['app_token']
-            getaccess_token_url = "http://180.141.91.139:8022/ierp/api/login.do"
+            getaccess_token_url = "http://180.141.91.139:8023/ierp/api/login.do"
             getaccess_token_payload = {
-                "user": "15016700760",
+                "user": "43007523",
                 "apptoken": apptoken,
-                "tenantid": "wnjtdev",
-                "accountId": "970282446551518208",
-                "usertype": "Mobile"
+                "tenantid": "wnjtsit",
+                "accountId": "1938351379391184896",
+                "usertype": "UserName"
             }
             try:
                 response_access_token = (requests.post(getaccess_token_url, json=getaccess_token_payload, headers=headers)).json()
@@ -108,6 +108,7 @@ def check_token_expiration(token_data):
 
 
 if __name__ == "__main__":
+    savetoken()
     token = get_token()
     check_token_expiration(token)
     if token:
