@@ -5,6 +5,10 @@ import dbconnection as dbcon
 import write_log
 import threading
 import concurrent.futures
+import time
+
+# 创建一个全局锁对象
+lock = threading.Lock()
 
 
 # 将未上传的前100条数据状态置为2
@@ -48,47 +52,56 @@ def task_datele_mclz(key_name, exec_sql):
 
 #  发送主程序
 def send_message_to_mclz():
-    write_log.write_log('发送定时任务开始执行...')
-    # 创建一个字典来跟踪每个线程的执行次数
-    thread_counts = {}
-    # 获取订单号列表
-    dist_billnumber = select_distno()
+    # 尝试获取锁
+    acquired = lock.acquire(timeout=0)
+    if not acquired:
+        # 如果获取锁失败，说明前一个任务正在执行，直接返回
+        return
+    try:
+        write_log.write_log('发送定时任务开始执行...')
 
-    # 获取token
-    token_data = get_token()
-    if not check_token_expiration(token_data):
-        login_auth()
+        # 创建一个字典来跟踪每个线程的执行次数
+        thread_counts = {}
+        # 获取订单号列表
+        dist_billnumber = select_distno()
+
+        # 获取token
         token_data = get_token()
-    token = token_data["token"]
+        if not check_token_expiration(token_data):
+            login_auth()
+            token_data = get_token()
+        token = token_data["token"]
 
-    # 创建一个线程池，最大工作线程数可以根据需要进行调整
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        # 准备一个列表来存储Future对象
-        futures = []
-        # 遍历 dist_billnumber 列表，并为每个元素生成一个索引和对应的值。start=1 参数表示索引从 1 开始。
-        for i, bill_number in enumerate(dist_billnumber, start=1):
-            # 构建线程名称
-            thread_name = "线程" + str(i % 5 + 1)
+        # 创建一个线程池，最大工作线程数可以根据需要进行调整
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            # 准备一个列表来存储Future对象
+            futures = []
+            # 遍历 dist_billnumber 列表，并为每个元素生成一个索引和对应的值。start=1 参数表示索引从 1 开始。
+            for i, bill_number in enumerate(dist_billnumber, start=1):
+                # 构建线程名称
+                thread_name = "线程" + str(i % 1 + 1)
 
-            # 提交任务到线程池，并传递订单号、线程名称和计数
-            future = executor.submit(process_data, bill_number, thread_name, i)
+                # 提交任务到线程池，并传递订单号、线程名称和计数
+                future = executor.submit(process_data, bill_number, thread_name, i)
 
-            # 将Future对象添加到列表中
-            futures.append(future)
+                # 将Future对象添加到列表中
+                futures.append(future)
 
-            # 更新线程执行次数
-            if thread_name in thread_counts:
-                thread_counts[thread_name] += 1
-            else:
-                thread_counts[thread_name] = 1
-    # 等待所有任务完成
-    concurrent.futures.wait(futures)
+                # 更新线程执行次数
+                if thread_name in thread_counts:
+                    thread_counts[thread_name] += 1
+                else:
+                    thread_counts[thread_name] = 1
+        # 等待所有任务完成
+        concurrent.futures.wait(futures)
 
-    # 打印每个线程的执行次数
-    for thread_name, count in thread_counts.items():
-        write_log.write_log(f"线程 {thread_name} 执行了 {count} 次任务")
-
-    write_log.write_log('本次发送定时任务结束')
+        # 打印每个线程的执行次数
+        for thread_name, count in thread_counts.items():
+            write_log.write_log(f" {thread_name} 执行了 {count} 次任务")
+    finally:
+        # 释放锁
+        lock.release()
+        write_log.write_log('本次发送定时任务结束')
 
 
 #  取220条状态为2的配送单
@@ -100,8 +113,8 @@ def select_distno():
         select   bill_number
         from  wy_dist_to_mclz a
         where  state='2'
-        ORDER BY create_time
-        limit 225
+        ORDER BY create_time 
+        limit 1000
         ) a
         """
     try:
@@ -133,6 +146,7 @@ def process_data(bill_number, thread_name, count):
     # if not check_token_expiration(token_data):  # 检查token的有效性，如果为false 则重新获取token并存储在Token.yaml文件中
     #     login_auth()
     #     token_data = get_token()
+    # time.sleep(3)
     # 发送数据
     post_data(send_data, bill_number, token_data["token"], count, thread_name)
 
@@ -195,8 +209,8 @@ def get_additional_data(bill_number, thread_name, count):
         		select  CONVERT(c.plan_quantity, FLOAT) OrderQuantity, CONVERT(c.quantity, FLOAT)  DeliveryQuantity,
                 CONVERT(c.receive_quantity, FLOAT)   CheckQuantity,CONVERT(c.price, FLOAT) Price,
                 MAX(CASE WHEN f.production_date IS NOT NULL THEN DATE_FORMAT(f.production_date, '%Y-%m-%d %H:%i:%S') ELSE DATE_FORMAT(DATE(b.dist_date - INTERVAL 1 DAY) ,'%Y-%m-%d %H:%i:%S')END) AS ProductDate,
-                MAX(f.batch)  ProductStandardCode,h.code  GenericCode,h.name  GenericName,h.category_code  FoodTypeCode,
-                h.category_name FoodTypeName, h.specification Specification,h.spec_unit Unit,
+                MAX(f.batch)  ProductStandardCode,h.code  GenericCode,REPLACE(h.name, '#', '')  GenericName,h.category_code  FoodTypeCode,
+                h.category_name FoodTypeName, REPLACE(h.specification, '#', '') Specification,h.spec_unit Unit,
                 CASE WHEN h.shelf_life_unit='month' THEN  h.shelf_life_value*30 
         		WHEN h.shelf_life_unit='year' THEN  h.shelf_life_value*365 
         		WHEN h.shelf_life_value is NULL THEN  3 
@@ -236,12 +250,17 @@ def get_additional_data(bill_number, thread_name, count):
                     product_info[ls2[i]] = row2[i]
                     # 根据商品的批次号获取检验报告放放入商品信息product_info中
                     if ls2[i] == "ProductStandardCode":
+                        # exec_sql3 = """
+                        #         select  REPLACE(REPLACE(j.name, "'", ''),'#','') FileName,CONCAT('https://erp.nnwysc.com/eos-download/accessory',j.file_path) FileUrl
+                        #          from   e_batch h,e_accessory j
+                        #          WHERE h.batch=j.owner_uuid
+                        #          and   h.batch='{}'
+                        #          """.format(row2[i])
                         exec_sql3 = """
-                                select  j.name FileName,CONCAT('https://erp.nnwysc.com/eos-download/accessory',j.file_path) FileUrl
-                                 from   e_batch h,e_accessory j
-                                 WHERE h.batch=j.owner_uuid
-                                 and   h.batch='{}'
-                                 """.format(row2[i])
+                        select  REPLACE(REPLACE(name, "'", ''),'#','') FileName,CONCAT('https://erp.nnwysc.com/eos-download/accessory',file_path) FileUrl
+                        from  e_accessory   
+                        where   owner_uuid='{}'			
+                        """.format(row2[i])
                         cursor3 = dbcon.exec_sql(cnx, exec_sql3)  # 创建游标
                         if cursor3 is None:
                             write_log.write_log('{}: cursor3执行语句失败'.format(thread_name))
@@ -294,24 +313,31 @@ def post_data(json_data, billnumber, token_str, count, thread_name):
         # 检查响应状态码
         if response.status_code == 200:
             # 如果同时满足response.json()['Code']不等于100和response.json()['Message']为该配送单已经存在！的条件，则请求失败
-            if response.json()['Code'] != 100 and response.json()['Message'] != '该配送单已经存在！':
+            if (response.json()['Message'] == '服务端错误： 已添加了具有相同键的项。' or response.json()[
+                'Message'] == '服务端错误： 未将对象引用设置到对象的实例。'
+                    or response.json()['Message'] == '您的登录已过期，请重新登录' or response.json()[
+                        'Message'] == '服务端错误： 索引超出了数组界限。'):
+                write_log.write_log('{}: 第{}个订单需要重传，{}'.format(thread_name, count, response.json()['Message']))
+                write_log.write_log(json.dumps(json_data, ensure_ascii=False, indent=2))
+                return False
+            elif response.json()['Code'] != 100 and response.json()['Message'] != '该配送单已经存在！':
                 write_log.write_log('{}: 第{}个订单请求失败，{}'.format(thread_name, count, response.json()['Message']))
                 write_log.write_log(json.dumps(json_data, ensure_ascii=False, indent=2))
                 sql_str1 = """
-                UPDATE  wy_dist_to_mclz
-                set state ='3',remark='{}',finish_time=now()
-                where  bill_number='{}'
-                """.format(response.json()['Message'], billnumber)
+                                UPDATE  wy_dist_to_mclz
+                                set state ='3',remark='{}',finish_time=now()
+                                where  bill_number='{}'
+                                """.format(response.json()['Message'], billnumber)
                 # 连接数据库
                 cursor1 = dbcon.exec_sql(cnx, sql_str1)
                 if cursor1 is None:
                     dbcon.db_disconnect(cnx)  # 关闭数据库连接
                     return False
                 sql_str2 = """
-                UPDATE  wy_dist_to_mclz_log
-                set state ='3',remark='{}',finish_time=now()
-                where  bill_number='{}'
-                """.format(response.json()['Message'], billnumber)
+                                UPDATE  wy_dist_to_mclz_log
+                                set state ='3',remark='{}',finish_time=now()
+                                where  bill_number='{}'
+                                """.format(response.json()['Message'], billnumber)
                 # 连接数据库
                 cursor2 = dbcon.exec_sql(cnx, sql_str2)
                 if cursor2 is None:
@@ -322,35 +348,36 @@ def post_data(json_data, billnumber, token_str, count, thread_name):
                 cursor2.close()
                 dbcon.db_disconnect(cnx)  # 关闭数据库连接
                 return False
-            # 请求成功
-            sql_str1 = """
-            UPDATE  wy_dist_to_mclz
-            set state ='1',remark='更新成功',finish_time=now()
-            where  bill_number='{}'
-            """.format(billnumber)
-            # 连接数据库
-            cursor1 = dbcon.exec_sql(cnx, sql_str1)
-            if cursor1 is None:
+            else:
+                # 请求成功
+                sql_str1 = """
+                UPDATE  wy_dist_to_mclz
+                set state ='1',remark='更新成功',finish_time=now()
+                where  bill_number='{}'
+                """.format(billnumber)
+                # 连接数据库
+                cursor1 = dbcon.exec_sql(cnx, sql_str1)
+                if cursor1 is None:
+                    dbcon.db_disconnect(cnx)  # 关闭数据库连接
+                    return False
+                sql_str2 = """
+                UPDATE  wy_dist_to_mclz_log
+                set state ='1',remark='更新成功',finish_time=now()
+                where  bill_number='{}'
+                """.format(billnumber)
+                # 连接数据库
+                cursor2 = dbcon.exec_sql(cnx, sql_str2)
+                if cursor2 is None:
+                    dbcon.db_disconnect(cnx)  # 关闭数据库连接
+                    return False
+                cnx.commit()
+                write_log.write_log('{}: 第{}个订单update{}执行语句成功'.format(thread_name, count, billnumber))
+                cursor1.close()
+                cursor2.close()
                 dbcon.db_disconnect(cnx)  # 关闭数据库连接
-                return False
-            sql_str2 = """
-            UPDATE  wy_dist_to_mclz_log
-            set state ='1',remark='更新成功',finish_time=now()
-            where  bill_number='{}'
-            """.format(billnumber)
-            # 连接数据库
-            cursor2 = dbcon.exec_sql(cnx, sql_str2)
-            if cursor2 is None:
-                dbcon.db_disconnect(cnx)  # 关闭数据库连接
-                return False
-            cnx.commit()
-            write_log.write_log('{}: 第{}个订单update{}执行语句成功'.format(thread_name, count, billnumber))
-            cursor1.close()
-            cursor2.close()
-            dbcon.db_disconnect(cnx)  # 关闭数据库连接
-            write_log.write_log("{}: 第{}个订单Request successful,Response:".format(thread_name, count))
-            write_log.write_log(response.json())
-            write_log.write_log('{}: 第{}个订单发送结束'.format(thread_name, count))
+                write_log.write_log("{}: 第{}个订单Request successful,Response:".format(thread_name, count))
+                write_log.write_log(response.json())
+                write_log.write_log('{}: 第{}个订单发送结束'.format(thread_name, count))
         else:
             dbcon.db_disconnect(cnx)  # 关闭数据库连接
             write_log.write_log(f"Request failed with status code: {response.status_code}")

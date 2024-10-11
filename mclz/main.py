@@ -54,6 +54,17 @@ def task_datele_mclz():
     send_mesage.task_datele_mclz(key_name, exec_sql)
 
 
+# 定时任务删除创建时间超过一个月的记录
+def task_datele_mclz_fail():
+    exec_sql = """
+    delete FROM wy_dist_to_mclz
+    WHERE create_time < DATE_SUB(NOW(), INTERVAL 1 MONTH)
+    ORDER BY  create_time desc
+    """
+    key_name = 'datele_mclz_fail'
+    send_mesage.task_datele_mclz(key_name, exec_sql)
+
+
 # 定义定时线程任将状态为2的订单发送
 def task_send_mclz():
     send_mesage.send_message_to_mclz()
@@ -64,18 +75,21 @@ def task_send_mclz():
 #     send_mesage.task_wy_dist_to_mclz()
 
 
-# schedule.every(5).minutes.do(run_threaded, task_print, '定义定时心跳，每5分钟执行一次')
+schedule.every(30).minutes.do(run_threaded, task_print, '定义定时心跳，每5分钟执行一次')
 schedule.every(5).minutes.do(run_threaded, task_update2_mclz)
-schedule.every(20).minutes.do(run_threaded, task_send_mclz)
+schedule.every(15).minutes.do(run_threaded, task_send_mclz)
 
 # 每天凌晨5：00删除wy_dist_to_mclz上传成功记录
 schedule.every().day.at("05:00").do(run_threaded, task_datele_mclz)
+
+# 每天凌晨6：00删除wy_dist_to_mclz表中创建超过一个月的记录
+schedule.every().day.at("06:00").do(run_threaded, task_datele_mclz_fail)
 
 if __name__ == '__main__':
     write_log.write_log(f'明厨亮灶发送数据开始程序执行')
     # 注册信号处理函数(有其他信号执行signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
-    # 立即执行一次任务
+    # 立即执行一次发送任务
     task_send_mclz()
     while True:
         # 检查是否有定时任务需要执行
