@@ -4,6 +4,7 @@ import signal
 import threading
 import send_mesage
 import write_log
+from datetime import datetime, timedelta
 
 
 # 程序结束提示信息打印输出
@@ -88,7 +89,7 @@ def task_send_wx_alldist():
 
 
 
-
+# 企业微信采购目录中商品缺商品图片/重量/保质期定时推送
 def task_send_product_info():
     exec_sql = """
     select   '总计',COUNT(*)  number
@@ -96,19 +97,29 @@ def task_send_product_info():
     where state='USING'
     UNION
     select product_event,count(product_code) number from(
-    select c.code as product_code,c.name as product_name,ifnull(d.owner_uuid,'无上传商品图片') as product_event
+    select c.code as product_code,c.name as product_name,'无上传商品图片' as product_event
     from e_purchase_catalog a,e_purchase_catalog_line b,e_product c left outer join (select owner_type,owner_uuid from e_accessory  where owner_type = 'Product' group by owner_type,owner_uuid) d on c.uuid = d.owner_uuid
     where a.uuid=b.purchase_catalog_uuid and b.product_code=c.code and a.begin_date<=curdate() and a.end_date>=curdate() and d.owner_uuid is null
     union
-    select c.code as product_code,c.name as product_name,ifnull(c.shelf_life_value,'无保质期') as product_event
+    select c.code as product_code,c.name as product_name,'无保质期' as product_event
     from e_purchase_catalog a,e_purchase_catalog_line b,e_product c 
     where a.uuid=b.purchase_catalog_uuid and b.product_code=c.code and a.begin_date<=curdate() and a.end_date>=curdate() and c.shelf_life_value is null
+	union
+    select c.code as product_code,c.name as product_name,'无重量' as product_event
+    from e_purchase_catalog a,e_purchase_catalog_line b,e_product c 
+    where a.uuid=b.purchase_catalog_uuid and b.product_code=c.code and a.begin_date<=curdate() and a.end_date>=curdate() 
+	and (c.net_weight=0 or c.net_weight is null)
+	union
+    select c.code as product_code,c.name as product_name,'无说明' as product_event
+    from e_purchase_catalog a,e_purchase_catalog_line b,e_product c 
+    where a.uuid=b.purchase_catalog_uuid and b.product_code=c.code and a.begin_date<=curdate() and a.end_date>=curdate() 
+	and (c.introduction='' or c.introduction is null)
     )q GROUP BY  product_event
     """
     key_name = 'product_info'
     send_mesage.send_message_to_wechat_robot_product_info(key_name, exec_sql)
 
-
+# 试供供应商提前20天结束的信息推送
 def task_send_trial_supplier_info():
     exec_sql = """
     SELECT  concat("供应商编号：",code,"，供应商名称：",name,",",remark,"，距离试供结束还剩",DATEDIFF(STR_TO_DATE(SUBSTRING(remark, 3, 10), '%Y-%m-%d %H:%i:%s'),CURDATE()) ,"天。")  printline
@@ -125,49 +136,125 @@ def task_send_trial_supplier_info():
     key_name = 'trial_supplier_info'
     send_mesage.send_message_to_wechat_robot_trial_supplier_info(key_name, exec_sql)
 
-
-
-def task_send_trial_supplier_info():
-    exec_sql = """
-    SELECT  concat("供应商编号：",code,"，供应商名称：",name,",",remark,"，距离试供结束还剩",DATEDIFF(STR_TO_DATE(SUBSTRING(remark, 3, 10), '%Y-%m-%d %H:%i:%s'),CURDATE()) ,"天。")  printline
-    from  e_supplier 
-    where  remark like '%试供%'
-    AND DATEDIFF(STR_TO_DATE(SUBSTRING(remark, 3, 10), '%Y-%m-%d %H:%i:%s'),CURDATE()) <= 20
-    AND DATEDIFF(STR_TO_DATE(SUBSTRING(remark, 3, 10), '%Y-%m-%d %H:%i:%s'),CURDATE()) >= 0
-    union all
-    SELECT  concat("供应商编号：",code,"，供应商名称：",name,",",remark,"，已结束",DATEDIFF(CURDATE(),STR_TO_DATE(SUBSTRING(remark, 3, 10), '%Y-%m-%d %H:%i:%s')) ,"天。")  printline
-    from  e_supplier 
-    where  remark like '%试供%'
-    AND DATEDIFF(STR_TO_DATE(SUBSTRING(remark, 3, 10), '%Y-%m-%d %H:%i:%s'),CURDATE()) < 0
-    """
-    key_name = 'trial_supplier_info'
-    send_mesage.send_message_to_wechat_robot_trial_supplier_info(key_name, exec_sql)
-
-
+# 缺采购目录的商品推送
 def task_send_purchase_catalog():
     exec_sql = """
-    SELECT CONCAT("配送日期：",dist_date,"仓库编码：",warehouse_code,"仓库名称：",warehouse_name,"商品编码：",product_code,"商品名称：",product_name,"无销售目录") printline
-    from (
-    select distinct sa.dist_date ,sa.warehouse_code ,sa.warehouse_name ,sal.product_code ,sal.product_name
-    from e_sale_order sa,e_sale_order_line sal,e_product ep
-    where sal.order_bill_number=sa.bill_number
-    and sa.type in ('breakfastDinner')
-    and sa.state<>'deleted'
-    and sal.product_code=ep.code
-    and ep.is_finish_product=0
-    and sa.dist_date>=curdate()+2
-    and sa.dist_date<=curdate()+3
-    and not exists(select 1 from e_purchase_catalog pc,e_purchase_catalog_line pcl,e_sale_order sa
-    where pcl.purchase_catalog_uuid = pc.uuid and pcl.warehouse_code = sa.warehouse_code
-    and sal.product_code = pcl.product_code and pcl.enable=1
-    and pc.begin_date <= sa.dist_date
-    and pc.end_date >= sa.dist_date
-    )  
-	)mm
-    ORDER BY dist_date ,warehouse_code
+    select distinct DATE_FORMAT(a.dist_date, '%Y-%m-%d')  as dist_date,a.warehouse_code,a.warehouse_name,b.product_code,b.product_name
+    from e_sale_order a,e_sale_order_line b,e_product c
+    where b.order_bill_number=a.bill_number
+    and a.type='breakfastDinner'
+    and a.state<>'deleted'
+    and b.product_code=c.code
+    and c.is_finish_product=0
+    and a.dist_date>=DATE_ADD(CURDATE(), INTERVAL 2 DAY)
+    and a.dist_date<=DATE_ADD(CURDATE(), INTERVAL 3 DAY)
+    and not exists(select 1 from e_purchase_catalog d join e_purchase_catalog_line e
+    on e.purchase_catalog_uuid = d.uuid
+    where e.warehouse_code = a.warehouse_code and b.product_code = e.product_code
+    and e.enable=1
+    and d.begin_date <= a.dist_date
+    and d.end_date >= a.dist_date
+    )
     """
     key_name = 'purchase_catalog_info'
     send_mesage.send_message_to_wechat_robot_purchase_catalog(key_name, exec_sql)
+
+
+# 基地波次状态推送
+def task_send_wave_state_info():
+    # 获取当前日期时间,界定每天22点时之后为为后一天日期
+    current_datetime = datetime.now()
+    # 加上2小时
+    new_datetime = current_datetime + timedelta(hours=2)
+    # 将日期时间转换成字符串
+    new_datetime_str = new_datetime.strftime('%Y-%m-%d')
+
+    exec_sql = """
+    select hz.wrh_code,hz.wrh_name,hz.bill_number,hz.state,hz.pickup_count,hz.unlocks,hz.unpicked,hz.picked,hz.checked,hz.suspend,hz.canceled
+    from (select a.uuid,a.dist_date,a.warehouse_code wrh_code,a.warehouse_name wrh_name,a.bill_number,case a.sale_order_type when 'unpack' then '零星波次' else '食材波次' end as sale_order_type,
+    a.remark,a.create_time,a.create_oper_code,a.create_oper_name,a.dist_count,a.pickup_count,a.sale_order_count,
+    case a.state when 'initial' then '初始化' when 'finished' then '已完成' end as state,
+    sum(case when b.state ='picked' then 1 else 0 end ) as picked,
+    sum(case when b.state ='deleted' then 1 else 0 end ) as deleted,
+    sum(case when b.state ='canceled' then 1 else 0 end ) as canceled,
+    sum(case when b.state ='checked' then 1 else 0 end ) as checked,
+    sum(case when b.state ='unpicked' then 1 else 0 end ) as unpicked,
+    sum(case when b.state ='suspend' then 1 else 0 end ) as suspend,
+    sum(case when b.state ='unlock' then 1 else 0 end ) as unlocks
+    from e_waves a , e_pick_pool b
+    where a.bill_number = b.waves_bill_number
+    and a.dist_date = '{}'
+    group by a.dist_date,a.warehouse_code,a.warehouse_name,a.bill_number,a.sale_order_type,a.remark,a.create_time,a.create_oper_code,a.create_oper_name,a.dist_count,a.pickup_count,a.sale_order_count,a.state
+    )hz left join e_operate_log c on hz.uuid=c.owner_uuid and c.o_describe='结束波次成功'
+    where 1=1
+    and  hz.sale_order_count>=10
+    and  state='初始化'
+    and  hz.wrh_code<>'W0010'
+    order by hz.wrh_name,hz.wrh_code,hz.bill_number
+    """.format(new_datetime_str)
+    key_name = 'wave_state_info'
+    send_mesage.send_message_to_wechat_robot_send_wave_state_info(key_name, exec_sql)
+
+def task_send_dist_weight():
+    #wgy 每日学校配送重量定时传企业微信
+
+    exec_sql = """
+    select 
+    /*按当天*/
+    DATE_FORMAT(curdate(),'%Y-%m-%d') as expiration_date,
+    round(sum(q.day_dist_amount)/10000,2) as day_dist_amount,/*单位为万元*/
+    round(sum(q.day_dist_weight),2) as day_dist_weight,
+    /*按周*/
+    concat(DATE_FORMAT(curdate()-6,'%Y-%m-%d'),'至',DATE_FORMAT(curdate(),'%Y-%m-%d')) as week_date,
+    round(sum(q.week_dist_amount)/10000,2) as week_dist_amount,
+    round(sum(q.week_dist_weight),2) as week_dist_weight,
+    /*按月份*/
+    DATE_FORMAT(curdate(),'%Y-%m') as month_date,
+    round(sum(q.month_dist_amount)/10000,2) as month_dist_amount,
+    round(sum(q.month_dist_weight),2) as month_dist_weight,
+    /*按学期*/
+    concat('2024-09-01','至',DATE_FORMAT(curdate(),'%Y-%m-%d')) as semester_date,
+    round(sum(q.semester_dist_amount)/10000,2) as semester_dist_amount,
+    round(sum(q.semester_dist_weight),2) as semester_dist_weight,
+	/*按2024年*/
+    concat('2024-01-01','至',DATE_FORMAT(curdate(),'%Y-%m-%d')) as year_date,
+    round(sum(q.year_dist_amount)/10000,2) as year_dist_amount,
+    round(sum(q.year_dist_weight),2) as year_dist_weight,
+    /*从开业至2024年8月1日前累计重量为26万吨*/
+    round(sum(q.all_dist_weight)+260000,2) as all_dist_weight
+    from (
+    /*按天累计*/
+    select sum(dist_amount) as day_dist_amount,sum(dist_weight)/1000 as day_dist_weight,'' as week_dist_amount,'' as week_dist_weight,'' as month_dist_amount,'' as month_dist_weight,'' as semester_dist_amount,'' as semester_dist_weight,'' as year_dist_amount,'' as year_dist_weight,'' as all_dist_weight
+    from wy_dist_weight where dist_date=curdate()
+    /*按周累计*/
+    union all
+    select '' as day_dist_amount,'' as day_dist_weight,sum(dist_amount) as week_dist_amount,sum(dist_weight)/1000 as week_dist_weight,'' as month_dist_amount,'' as month_dist_weight,'' as semester_dist_amount,'' as semester_dist_weight,'' as year_dist_amount,'' as year_dist_weight,'' as all_dist_weight
+    from wy_dist_weight 
+    where dist_date>=curdate()-6 and dist_date<=curdate()
+    /*按月累计*/
+    union all
+    select '' as day_dist_amount,'' as day_dist_weight,'' as week_dist_amount,'' as week_dist_weight,sum(dist_amount) as month_dist_amount,sum(dist_weight)/1000 as month_dist_weight,'' as semester_dist_amount,'' as semester_dist_weight,'' as year_dist_amount,'' as year_dist_weight,'' as all_dist_weight
+    from wy_dist_weight 
+    where DATE_FORMAT(dist_date,'%Y-%m')=DATE_FORMAT(curdate(),'%Y-%m')
+    /*按学期累计*/
+    union all
+    select '' as day_dist_amount,'' as day_dist_weight,'' as week_dist_amount,'' as week_dist_weight,'' as month_dist_amount,'' as month_dist_weight,sum(dist_amount) as semester_dist_amount,sum(dist_weight)/1000 as semester_dist_weight,'' as year_dist_amount,'' as year_dist_weight,'' as all_dist_weight
+    from wy_dist_weight 
+    where dist_date>='2024-09-01'
+    /*按年累计*/
+    union all
+    select '' as day_dist_amount,'' as day_dist_weight,'' as week_dist_amount,'' as week_dist_weight,'' as month_dist_amount,'' as month_dist_weight,'' as semester_dist_amount,'' as semester_dist_weight,sum(dist_amount) as year_dist_amount,sum(dist_weight)/1000 as year_dist_weight,'' as all_dist_weight
+    from wy_dist_weight 
+    where dist_date>='2024-01-01'		
+	/*全部累计*/
+    union all
+    select '' as day_dist_amount,'' as day_dist_weight,'' as week_dist_amount,'' as week_dist_weight,'' as month_dist_amount,'' as month_dist_weight,'' as semester_dist_amount,'' as semester_dist_weight,'' as year_dist_amount,'' as year_dist_weight,sum(dist_weight)/1000 as all_dist_weight
+    from wy_dist_weight 
+    where dist_date>='2024-08-01'
+    )q
+    """
+    key_name = 'send_dist_weight'
+    send_mesage.send_message_to_wechat_robot_send_dist_weight(key_name, exec_sql)
 
 # 定义线程任务结束--------------------------------------------------------------------------------------------------------
 
@@ -196,9 +283,27 @@ schedule.every().monday.at("08:00").do(run_threaded, task_send_product_info)
 #每天早上10：00推送给试供供应商信息至采购群里
 schedule.every().day.at("10:00").do(run_threaded,task_send_trial_supplier_info)
 
-#每天10：00/16:00推送给是否存在缺失采购目录的商品至采购群里 BY LB
+#每天10：00/16:00/16:50推送给是否存在缺失采购目录的商品至采购群里 BY LB
 schedule.every().day.at("08:00").do(run_threaded,task_send_purchase_catalog)
-schedule.every().day.at("16:10").do(run_threaded,task_send_purchase_catalog)
+schedule.every().day.at("16:00").do(run_threaded,task_send_purchase_catalog)
+schedule.every().day.at("16:50").do(run_threaded,task_send_purchase_catalog)
+schedule.every().day.at("16:59").do(run_threaded,task_send_purchase_catalog)
+
+
+#每天23：00/00:00/1:00/2：00  推送给是基地波次状态到信息群 BY LB
+# schedule.every().day.at("11:27").do(run_threaded,task_send_wave_state_info)
+# schedule.every().day.at("23:30").do(run_threaded,task_send_wave_state_info)
+# schedule.every().day.at("00:00").do(run_threaded,task_send_wave_state_info)
+# schedule.every().day.at("00:30").do(run_threaded,task_send_wave_state_info)
+schedule.every().day.at("01:00").do(run_threaded,task_send_wave_state_info)
+# schedule.every().day.at("01:30").do(run_threaded,task_send_wave_state_info)
+schedule.every().day.at("02:00").do(run_threaded,task_send_wave_state_info)
+# schedule.every().day.at("02:30").do(run_threaded,task_send_wave_state_info)
+
+#每天16：10 推送每日配送重量到信息群 WGY
+schedule.every().day.at("16:10").do(run_threaded,task_send_dist_weight)
+
+
 # schedule.every().day.at("10:00").do(run_threaded,task_send_purchase_catalog)
 # 定义定时任务，每隔5秒执行一次
 # schedule.every(5).seconds.do(print_hi_sleep,f'定义定时任务，每隔5秒执行一次A')
