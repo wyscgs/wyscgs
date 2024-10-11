@@ -119,7 +119,10 @@ def get_product_list(code, page_num):
                     0 as product_width,0 as product_height,0 as product_length ,
                     '' as volume_unit, 0 as volume,a.one_category_code,a.one_category_name,
                     a.category_code,a.category_name,a.three_category_code,a.three_category_name,
-                    b.remark,goods_category_code
+                    b.remark,goods_category_code,tax_revenue_code,output_tax_rate,
+                    case ifnull(output_tax_rate,0) when 0 then 1 else 0 end as yh,
+                    case ifnull(output_tax_rate,0) when 0 then "免税" else null end as yhzc,
+                    case ifnull(output_tax_rate,0) when 0 then 1 else '' end as mslx 
                     from e_product  a,e_product_category b
                     where  a.category_code=b.code
                     and a.code = '{code}' 
@@ -133,7 +136,10 @@ def get_product_list(code, page_num):
                     0 as product_width,0 as product_height,0 as product_length ,
                     '' as volume_unit, 0 as volume ,a.one_category_code,a.one_category_name,
                     a.category_code,a.category_name,a.three_category_code,a.three_category_name,
-                    b.remark,goods_category_code
+                    b.remark,goods_category_code,tax_revenue_code,output_tax_rate,
+                    case ifnull(output_tax_rate,0) when 0 then 1 else 0 end as yh,
+                    case ifnull(output_tax_rate,0) when 0 then "免税" else null end as yhzc,
+                    case ifnull(output_tax_rate,0) when 0 then 1 else '' end as mslx 
                     from e_product  a,e_product_category b
                     where a.category_code=b.code
                     and b.flevel ='two'
@@ -164,7 +170,9 @@ def get_product_list(code, page_num):
     cum_name = ["code", "name", "specification", "unit", "spec_unit", "short_code", "introduction",
                 "is_agricultural_product", "net_weight", "product_width", "product_height", "product_length",
                 "volume_unit", "volume","one_category_code","one_category_name",
-                "category_code","category_name","three_category_code","three_category_name","nc","goods_category_code"]
+                "category_code","category_name","three_category_code","three_category_name","nc","goods_category_code",
+                "tax_revenue_code", "output_tax_rate", "yh", "yhzc", "mslx"
+                ]
     result_dic = {'status': 1, 'msg': '查询成功', 'count': rows_count}
     cum_list = []
     for row in results:

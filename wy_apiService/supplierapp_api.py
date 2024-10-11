@@ -47,7 +47,7 @@ def get_purchase_billnumber_list(b_date, e_date, supplier_codes):
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_purchase_billnumber_list:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_purchase_billnumber_list:执行语句失败：{err}。")
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
     # 获取返回行
     results = connector.fetchall()
@@ -66,7 +66,7 @@ def get_purchase_billnumber_list(b_date, e_date, supplier_codes):
             temp[cum_name[i]] = row[i]
         cum_list.append(temp)
     result_dic['bill'] = cum_list
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_purchase_billnumber_list:返回{result_dic}")
     return result_dic
 
@@ -106,7 +106,7 @@ def get_purchase_detail(bill_number):
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_purchase_detail:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_purchase_detail:执行语句失败：{err}。")
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
     # 获取单据主信息返回行
     results = connector.fetchall()
@@ -124,7 +124,7 @@ def get_purchase_detail(bill_number):
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_purchase_detail:sql：{sql_query_line}。")
         write_log.write_log(f"supplierapp_api.get_purchase_detail:执行语句失败：{err}。")
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
 
     # 获取返回行
@@ -173,7 +173,7 @@ def get_purchase_detail(bill_number):
         order_list.append(temp)
     result_dic['bill_line'] = order_list
 
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_purchase_detail:返回{result_dic}")
     return result_dic
 
@@ -195,7 +195,7 @@ def get_receipt_billnumber_list(supplier_codes):
         # 提交更改
         connect_obj.commit()
     except connect_obj.connector.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         # 如果更新失败，打印数据库错误信息
         write_log.write_log(f"supplierapp_api.get_receipt_billnumber_list:执行语句失败：{err}。")
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
@@ -205,7 +205,7 @@ def get_receipt_billnumber_list(supplier_codes):
     try:
         connector.execute(sql_query)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_receipt_billnumber_list:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_receipt_billnumber_list:执行语句失败：{err}。")
@@ -235,13 +235,13 @@ def get_receipt_billnumber_list(supplier_codes):
         # 提交更改
         connect_obj.commit()
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_receipt_billnumber_list:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_receipt_billnumber_list:执行语句失败：{err}。")
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
 
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_receipt_billnumber_list:返回{result_dic}")
     return result_dic
 
@@ -259,7 +259,7 @@ def get_receipt_detail(bill_number):
         f"WHERE  bill_number = '{bill_number}' ")
     sql_query_line = (
         f" select receipt_bill_number  as docno,line_number as sno,product_code,"
-        f" quantity as qty,price as slprc,money as slamt,date_format(production_date,'%Y-%m-%d %H:%i:%s') as scdat,batch as pcno ,state as line_state"
+        f" quantity as qty,price as slprc,money as slamt,date_format(production_date,'%Y-%m-%d %H:%i:%s') as scdat,batch as pcno ,state as line_state,tax_rate"
         f" from e_receipt_line"
         f"  WHERE  receipt_bill_number = '{bill_number}' ")
     print(sql_query_line)
@@ -275,7 +275,7 @@ def get_receipt_detail(bill_number):
     try:
         connector.execute(sql_query)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_receipt_detail:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_receipt_detail:执行语句失败：{err}。")
@@ -293,7 +293,7 @@ def get_receipt_detail(bill_number):
     try:
         connector_line.execute(sql_query_line)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_receipt_detail:sql：{sql_query_line}。")
         write_log.write_log(f"supplierapp_api.get_receipt_detail:执行语句失败：{err}。")
@@ -322,7 +322,7 @@ def get_receipt_detail(bill_number):
     result_dic['bill'] = cum_list
 
     # 处理明细信息
-    order_line = ["docno", "sno", "product_code", "qty", "slprc", "slamt", "scdat", "pcno", "line_state"]
+    order_line = ["docno", "sno", "product_code", "qty", "slprc", "slamt", "scdat", "pcno", "line_state", "tax_rate"]
     order_list = []
     for row in results_line:
         temp = {}
@@ -331,7 +331,7 @@ def get_receipt_detail(bill_number):
         order_list.append(temp)
     result_dic['bill_line'] = order_list
 
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_receipt_detail:返回{result_dic}")
     return result_dic
 
@@ -344,14 +344,16 @@ def get_product_list(supplier_codes, page_num):
         write_log.write_log("supplierapp_api.get_product_list:供应商号列表错误")
         return json.dumps({'status': -100, 'meg': '输入参数格式错误C'})
     sql_query = (
-        f" select c.code,c.name,c.specification as spec,c.unit,b.supplier_code,b.supplier_name,b.purchase_price  "
-        f" from e_purchase_catalog a,e_purchase_catalog_line b,e_product c "
+        f" select c.code,c.name,c.specification as spec,c.unit,b.supplier_code,b.supplier_name,b.purchase_price ,c.tax_revenue_code,c.output_tax_rate * 100 as tax_rate,"
+        f"c.three_category_code,c.three_category_name,c.net_weight ,d.remark as cw_category"
+        f" from e_purchase_catalog a,e_purchase_catalog_line b,e_product c left outer join e_product_category d on c.three_category_code = d.code"
         f" where a.uuid = b.purchase_catalog_uuid and b.product_code = c.code "
         # f" and begin_date >=date_Add(sysdate(),interval -60 day) "
         f" and ( (begin_date <=date_Add(sysdate(),interval 10 day) and date_format(end_date,'%Y%m%d') >=date_format(date_Add(sysdate(),interval 10 day),'%Y%m%d'))"
         f" or  ( begin_date <=date_Add(sysdate(),interval 3 day) and date_format(end_date,'%Y%m%d') >=date_format(date_Add(sysdate(),interval 3 day),'%Y%m%d')))"
         f" and supplier_code in ({supplier_codes}) "
-        f" group by  c.code,c.name,c.specification  ,c.unit,b.supplier_code,b.supplier_name,b.purchase_price"
+        f" group by  c.code,c.name,c.specification  ,c.unit,b.supplier_code,b.supplier_name,b.purchase_price,c.tax_revenue_code,c.output_tax_rate,"
+        f"c.three_category_code,c.three_category_name,c.net_weight,d.remark"
         f" order by supplier_code,product_code limit {start_index},{per_page} ")
     print(sql_query)
     # 连接数据库
@@ -368,7 +370,7 @@ def get_product_list(supplier_codes, page_num):
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_product_list:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_product_list:执行语句失败：{err}。")
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
     # 获取返回行
     results = connector.fetchall()
@@ -378,7 +380,8 @@ def get_product_list(supplier_codes, page_num):
         dbconnect.db_disconnect(connect_obj)
         write_log.write_log("supplierapp_api.get_product_list:无数据")
         return json.dumps({"status": 0, "msg": "无数据！"})
-    cum_name = ["code", "name", "spec", "unit", "supplier_code", "supplier_name", "purchase_price", "warehouse_code"]
+    cum_name = ["code", "name", "spec", "unit", "supplier_code", "supplier_name", "purchase_price", "tax_revenue_code",
+                "tax_rate", "three_category_code", "three_category_name", "net_weight","cw_category"]
     result_dic = {'status': 1, 'msg': '查询成功', 'count': rows_count}
     cum_list = []
     for row in results:
@@ -387,7 +390,7 @@ def get_product_list(supplier_codes, page_num):
             temp[cum_name[i]] = row[i]
         cum_list.append(temp)
     result_dic['product'] = cum_list
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_product_list:返回{result_dic}")
     return result_dic
 
@@ -396,12 +399,14 @@ def get_product_list(supplier_codes, page_num):
 # by ly 20240117
 def get_purchase_return_detail(bill_number):
     sql_query = (
-        f"select bill_number as docno,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') as docdat,"
+        f"select a.bill_number as docno,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') as docdat,"
         f"return_oper_name as docname,DATE_FORMAT(occur_date,'%Y-%m-%d %H:%i:%s') as vailddat,return_oper_name as vaildname,"
         f"'1' as vaild,warehouse_code as cumno,'0604' AS paytype,DATE_FORMAT(occur_date,'%Y-%m-%d %H:%i:%s') as paydate,"
         f"'系统管理' as ywname,0 as csamt,0 as syamt,0 as qty ,'系统导入' as remark,'YK0101' as storeno,"
-        f" supplier_code,supplier_name,state from e_purchase_return"
-        f" WHERE  bill_number = '{bill_number}' ")
+        f" supplier_code,supplier_name,state,DATE_FORMAT(ifnull(b.dist_Date,occur_date),'%Y-%m-%d %H:%i:%s') as dist_Date "
+        f" from e_purchase_return a "
+        f" left outer join  (select bill_number,dist_Date from e_purchase_order) b on a.purchase_bill_number = b.bill_number"
+        f" WHERE  a.bill_number = '{bill_number}' ")
     sql_query_line = (
         f" select return_bill_number  as docno,line_number as sno,product_code,"
         f" 'YK0101' as storeno,quantity as qty,price as slprc,amount as slamt,tax_rate * 100 as outtx"
@@ -420,7 +425,7 @@ def get_purchase_return_detail(bill_number):
     try:
         connector.execute(sql_query)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_purchase_return_detail:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_purchase_return_detail:执行语句失败：{err}。")
@@ -438,7 +443,7 @@ def get_purchase_return_detail(bill_number):
     try:
         connector_line.execute(sql_query_line)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_purchase_return_detail:sql：{sql_query_line}。")
         write_log.write_log(f"supplierapp_api.get_purchase_return_detail:执行语句失败：{err}。")
@@ -455,7 +460,8 @@ def get_purchase_return_detail(bill_number):
 
     # 处理主信息
     cum_name = ["docno", "docdat", "docname", "vailddat", "vaildname", "vaild", "cumno", "paytype", "paydate",
-                "ywname", "csamt", "syamt", "qty", "remark", "storeno", "supplier_code", "supplier_name", "state"]
+                "ywname", "csamt", "syamt", "qty", "remark", "storeno", "supplier_code", "supplier_name", "state",
+                "dist_date"]
     result_dic = {'status': 1, 'msg': '查询成功'}
     cum_list = []
     for row in results:
@@ -475,7 +481,7 @@ def get_purchase_return_detail(bill_number):
         order_list.append(temp)
     result_dic['bill_line'] = order_list
 
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_purchase_return_detail:返回{result_dic}")
     return result_dic
 
@@ -497,7 +503,7 @@ def get_batch_sequence_number():
     try:
         connector.execute(sql_query)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_batch_sequence_number:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_batch_sequence_number:执行语句失败：{err}。")
@@ -523,7 +529,7 @@ def get_batch_sequence_number():
             connect_obj.commit()
             batch_sequence_number = '999999'
         except connect_obj.Error as err:
-            dbconnect.db_disconnect(connector)
+            dbconnect.db_disconnect(connect_obj)
             print(f'执行SQL语句失败，联系系统管理员{err}')
             write_log.write_log(f"supplierapp_api.get_batch_sequence_number:sql：{sql_update}。")
             write_log.write_log(f"supplierapp_api.get_batch_sequence_number:执行语句失败：{err}。")
@@ -537,7 +543,7 @@ def get_batch_sequence_number():
             connect_obj.commit()
             batch_sequence_number = new_param_1.zfill(6)
         except connect_obj.Error as err:
-            dbconnect.db_disconnect(connector)
+            dbconnect.db_disconnect(connect_obj)
             print(f'执行SQL语句失败，联系系统管理员{err}')
             write_log.write_log(f"supplierapp_api.get_batch_sequence_number:sql：{sql_update}。")
             write_log.write_log(f"supplierapp_api.get_batch_sequence_number:执行语句失败：{err}。")
@@ -600,7 +606,7 @@ def warehouse_exists(wrh_code, wrh_name):
     try:
         connector.execute(sql_query, (wrh_code, wrh_name))
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_batch_sequence_number:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_batch_sequence_number:执行语句失败：{err}。")
@@ -640,7 +646,7 @@ def get_purchase_order_line_details(lineuuid):
     try:
         connector.execute(sql_query, (lineuuid,))
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_batch_sequence_number:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_batch_sequence_number:执行语句失败：{err}。")
@@ -663,7 +669,7 @@ def get_purchase_order_line_details(lineuuid):
             temp[cum_name[i]] = row[i]
         cum_list.append(temp)
     result_dic['line_details'] = cum_list
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_purchase_order_line_details:返回{result_dic}")
     return result_dic
 
@@ -694,7 +700,7 @@ def get_purchase_catalog_price(product_code, warehouse_code, purchase_date, supp
         connector.execute(sql_query, (product_code, warehouse_code, supplier_code, purchase_date, purchase_date))
         # connector.execute(sql_query)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_purchase_catalog_price:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_purchase_catalog_price:执行语句失败：{err}。")
@@ -718,7 +724,7 @@ def get_purchase_catalog_price(product_code, warehouse_code, purchase_date, supp
         cum_list.append(temp)
     result_dic['product_info'] = cum_list
     result_dic['price'] = cum_list[0]["purchase_price"]
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_purchase_catalog_price:返回{result_dic}")
     return result_dic
 
@@ -769,7 +775,7 @@ def insert_purchase_order(purchase_order_info):
             connector.execute(sql_purchase_line)
         except connect_obj.Error as err:
             connector.close()
-            dbconnect.db_disconnect(connector)
+            dbconnect.db_disconnect(connect_obj)
             write_log.write_log(f"supplierapp_api.insert_purchase_order:sql：{sql_purchase_line}。")
             write_log.write_log(f"supplierapp_api.insert_purchase_order:执行语句失败：{err}。")
             return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
@@ -803,12 +809,12 @@ def insert_purchase_order(purchase_order_info):
         connect_obj.commit()
     except connect_obj.Error as err:
         connector.close()
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         write_log.write_log(f"supplierapp_api.insert_purchase_order:sql：{sql_purchase}。")
         write_log.write_log(f"supplierapp_api.insert_purchase_order:执行语句失败：{err}。")
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
     connector.close()
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     result_dic = {'status': 1, 'msg': '插入成功'}
     write_log.write_log(f"supplierapp_api.sql_purchase:返回{purchase_order_info}")
     return result_dic
@@ -827,7 +833,7 @@ def get_supplier_name(new_supplier_code):
     try:
         connector.execute(sql_query)
     except connect_obj.Error as err:
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         write_log.write_log(f"supplierapp_api.get_supplier_name:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_supplier_name:执行语句失败：{err}。")
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
@@ -840,7 +846,7 @@ def get_supplier_name(new_supplier_code):
         return json.dumps({"status": 0, "msg": "无单据数据！"})
     supplier_name = results[0]
     connector.close()
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     return supplier_name
 
 
@@ -850,34 +856,75 @@ def aborted_purchase_order(purchase_order_info):
     last_modify_oper_name = purchase_order_info["last_modify_oper_name"]
     remark = purchase_order_info["remark"]
 
+    state = get_purchase_order_state(old_bill_number)
+    if state == "aborted":
+        return json.dumps({'status': -100, 'msg': '当前订单状态为作废，不允许作废！'})
+    elif state == "partialReceived":
+        return json.dumps({'status': -100, 'msg': '当前订单状态为部分收货，不允许作废！'})
+    elif state == "finished":
+        return json.dumps({'status': -100, 'msg': '当前订单状态为已完成，不允许作废！'})
+    else:
+        # 连接数据库
+        connect_obj = dbconnect.db_connect()
+        if connect_obj is None:
+            write_log.write_log("supplierapp_api.aborted_purchase_order:连接数据库失败")
+            return json.dumps({'status': -100, 'meg': '连接数据库失败，联系系统管理员'})
+        connector = connect_obj.cursor()
+        # 将e_purchase_order主表中old_bill_number状态置为作废
+        sql_update_purchase = """
+            update e_purchase_order
+            set state='aborted',last_modify_oper_code='{}',last_modify_oper_name='{}',remark='{}',last_modify_time=NOW()
+            where   bill_number='{}'
+            """.format(last_modify_oper_code, last_modify_oper_name, remark, old_bill_number)
+        # 定义参数值
+        write_log.write_log(sql_update_purchase)
+        try:
+            connector.execute(sql_update_purchase)
+            connect_obj.commit()
+        except connect_obj.Error as err:
+            connector.close()
+            dbconnect.db_disconnect(connect_obj)
+            write_log.write_log(f"supplierapp_api.aborted_purchase_order:sql：{sql_update_purchase}。")
+            write_log.write_log(f"supplierapp_api.aborted_purchase_order:执行语句失败：{err}。")
+            return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
+        connector.close()
+        dbconnect.db_disconnect(connect_obj)
+        result_dic = {'status': 1, 'msg': '作废成功'}
+        write_log.write_log(f"supplierapp_api.aborted_purchase_order:返回{old_bill_number}")
+        return result_dic
+
+
+# 获取purchase_order的订单状态
+def get_purchase_order_state(bill_number):
     # 连接数据库
     connect_obj = dbconnect.db_connect()
     if connect_obj is None:
-        write_log.write_log("supplierapp_api.aborted_purchase_order:连接数据库失败")
+        write_log.write_log("supplierapp_api.get_purchase_order_state:连接数据库失败")
         return json.dumps({'status': -100, 'meg': '连接数据库失败，联系系统管理员'})
+    # 创建一个游标
     connector = connect_obj.cursor()
-    # 将e_purchase_order主表中old_bill_number状态置为作废
-    sql_update_purchase = """
-        update e_purchase_order
-		set state='aborted',last_modify_oper_code='{}',last_modify_oper_name='{}',remark='{}',last_modify_time=NOW()
-		where   bill_number='{}'
-        """.format(last_modify_oper_code,last_modify_oper_name,remark,old_bill_number)
-    # 定义参数值
-    write_log.write_log(sql_update_purchase)
+    # 判断post的仓库编码和名称是否存在
+    sql_query = "select   state  from e_purchase_order  where bill_number ='{}' ".format(bill_number)
+    # 执行查询根据日期获取purchase_order的订单号获取状态
     try:
-        connector.execute(sql_update_purchase)
-        connect_obj.commit()
+        connector.execute(sql_query)
     except connect_obj.Error as err:
         connector.close()
-        dbconnect.db_disconnect(connector)
-        write_log.write_log(f"supplierapp_api.aborted_purchase_order:sql：{sql_update_purchase}。")
-        write_log.write_log(f"supplierapp_api.aborted_purchase_order:执行语句失败：{err}。")
+        dbconnect.db_disconnect(connect_obj)
+        write_log.write_log(f"supplierapp_api.get_purchase_order_state:sql：{sql_query}。")
+        write_log.write_log(f"supplierapp_api.get_purchase_order_state:执行语句失败：{err}。")
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
+    # 获取单据主信息返回行
+    results = connector.fetchone()
+    rows_count = len(results)
+    if rows_count < 1:
+        dbconnect.db_disconnect(connect_obj)
+        write_log.write_log("supplierapp_api.get_purchase_order_state:无数据")
+        return json.dumps({"status": 0, "msg": "无单据数据！"})
+    state = results[0]
     connector.close()
-    dbconnect.db_disconnect(connector)
-    result_dic = {'status': 1, 'msg': '作废成功'}
-    write_log.write_log(f"supplierapp_api.aborted_purchase_order:返回{old_bill_number}")
-    return result_dic
+    dbconnect.db_disconnect(connect_obj)
+    return state
 
 
 # 根据供应商号及日期获取供应商对账单信息，分页显示
@@ -888,7 +935,9 @@ def get_supplier_statement(bdate, supplier_codes, page_num):
         write_log.write_log("supplierapp_api.get_supplier_statement:供应商号列表错误")
         return json.dumps({'status': -100, 'meg': '输入参数格式错误C'})
     sql_query = (
-        f" select a.supplier_code,a.bill_number,b.account_bill_number,a.rec_start_date,a.rec_end_date,max(b.occur_date) as occur_date,b.bill_type,b.warehouse_code,sum(b.amount) as amount   "
+        f" select a.supplier_code,a.bill_number,b.account_bill_number, DATE_FORMAT( a.rec_start_date, '%Y-%m-%d')   as rec_start_date,  "
+        f" DATE_FORMAT( a.rec_end_date, '%Y-%m-%d')  as rec_end_date,   DATE_FORMAT( max(b.occur_date), '%Y-%m-%d')   as occur_date,"
+        f" b.bill_type,b.warehouse_code,sum(b.amount) as amount   "
         f" from e_supplier_statement a,e_supplier_statement_detail b where a.bill_number = b.statement_bill_number   "
         f" and a.state <> 'deleted' and a.rec_start_date <='{bdate}' and a.rec_end_date >='{bdate}'  and a.supplier_code in ({supplier_codes})  "
         f" group by a.supplier_code,a.bill_number,b.account_bill_number,a.rec_start_date,a.rec_end_date,b.bill_type,b.warehouse_code  "
@@ -910,7 +959,7 @@ def get_supplier_statement(bdate, supplier_codes, page_num):
         print(f'执行SQL语句失败，联系系统管理员{err}')
         write_log.write_log(f"supplierapp_api.get_supplier_statement:sql：{sql_query}。")
         write_log.write_log(f"supplierapp_api.get_supplier_statement:执行语句失败：{err}。")
-        dbconnect.db_disconnect(connector)
+        dbconnect.db_disconnect(connect_obj)
         return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
     # 获取返回行
     results = connector.fetchall()
@@ -930,6 +979,180 @@ def get_supplier_statement(bdate, supplier_codes, page_num):
             temp[cum_name[i]] = row[i]
         cum_list.append(temp)
     result_dic['list'] = cum_list
-    dbconnect.db_disconnect(connector)
+    dbconnect.db_disconnect(connect_obj)
     write_log.write_log(f"supplierapp_api.get_supplier_statement:返回{result_dic}")
+    return result_dic
+
+
+# 根据供应商号获取采购目录信息，分页显示
+# by ly 20240115
+def get_product_bycode(product_code):
+    if product_code is None:
+        write_log.write_log("supplierapp_api.get_product_bycode:商品编码错误")
+        return json.dumps({'status': -100, 'meg': '输入参数格式错误C'})
+    sql_query = (
+        f" select c.code,c.name,c.specification as spec,c.unit,'' as supplier_code,'' as supplier_name,0 as purchase_price ,"
+        f"c.tax_revenue_code,c.output_tax_rate * 100 as tax_rate,c.three_category_code,c.three_category_name,net_weight,d.remark as cw_category "
+        f" from e_product c left outer join e_product_category d on  c.three_category_code = d.code where c.code =  '{product_code}' ")
+    print(sql_query)
+    # 连接数据库
+    connect_obj = dbconnect.db_connect()
+    if connect_obj is None:
+        write_log.write_log("supplierapp_api.get_product_bycode:连接数据库失败")
+        return json.dumps({'status': -100, 'meg': '连接数据库失败，联系系统管理员'})
+    # 创建一个游标
+    connector = connect_obj.cursor()
+    # 执行查询出来的语句
+    try:
+        connector.execute(sql_query)
+    except connect_obj.Error as err:
+        print(f'执行SQL语句失败，联系系统管理员{err}')
+        write_log.write_log(f"supplierapp_api.get_product_bycode:sql：{sql_query}。")
+        write_log.write_log(f"supplierapp_api.get_product_bycode:执行语句失败：{err}。")
+        dbconnect.db_disconnect(connect_obj)
+        return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
+    # 获取返回行
+    results = connector.fetchall()
+    rows_count = len(results)
+    if rows_count < 1:
+        dbconnect.db_disconnect(connect_obj)
+        write_log.write_log("supplierapp_api.get_product_list:无数据")
+        return json.dumps({"status": 0, "msg": "无数据！"})
+    cum_name = ["code", "name", "spec", "unit", "supplier_code", "supplier_name", "purchase_price", "tax_revenue_code",
+                "tax_rate", "three_category_code", "three_category_name", "net_weight","cw_category"]
+    result_dic = {'status': 1, 'msg': '查询成功', 'count': rows_count}
+    cum_list = []
+    for row in results:
+        temp = {}
+        for i in range(len(row)):
+            temp[cum_name[i]] = row[i]
+        cum_list.append(temp)
+    result_dic['product'] = cum_list
+    dbconnect.db_disconnect(connect_obj)
+    write_log.write_log(f"supplierapp_api.get_product_bycode:返回{result_dic}")
+    return result_dic
+
+
+# 根据日期及供应商号获取所有单据信息
+# by ly 20240529
+def get_bill_list(b_date, e_date, supplier_codes, page_num):
+    if not is_datetime(b_date):
+        print(b_date)
+        write_log.write_log("supplierapp_api.get_bill_list:开始日期格式错误")
+        return json.dumps({'status': -100, 'meg': '输入参数格式错误A'})
+    if not is_datetime(e_date):
+        print(b_date)
+        write_log.write_log("supplierapp_api.get_bill_list:结束日期格式错误")
+        return json.dumps({'status': -100, 'meg': '输入参数格式错误B'})
+    if supplier_codes is None:
+        write_log.write_log("supplierapp_api.get_bill_list:供应商号列表错误")
+        return json.dumps({'status': -100, 'meg': '输入参数格式错误C'})
+    start_index = (page_num - 1) * statement_page
+
+    sql_query = (
+        f" select bill_number,warehouse_code,supplier_code,supplier_name,    DATE_FORMAT( DATE_ADD(plan_receipt_date,INTERVAL 1 day) , '%Y-%m-%d')  as dist_date,"
+        f" DATE_FORMAT(     receipt_time, '%Y-%m-%d') as receipt_time,sum(b.quantity) as qty,sum(money) as csamt,'receipt' as doctype "
+        f"    from e_receipt  a,e_receipt_line b "
+        f" where a.bill_number = b.receipt_bill_number and a.state = 'received' and b.state <> 'aborted' "
+        f"and  a.receipt_time >='{b_date}' and a.receipt_time <='{e_date}'"
+        #  f"and  DATE_ADD(plan_receipt_date,INTERVAL 1 day) >='{b_date}' and DATE_ADD(plan_receipt_date,INTERVAL 1 day) <='{e_date}'"
+        f"and supplier_code IN ({supplier_codes}) "
+        f"group by bill_number,warehouse_code,supplier_code,supplier_name,DATE_ADD(plan_receipt_date,INTERVAL 1 day)  "
+        f"union all "
+        f"select bill_number,warehouse_code,supplier_code,supplier_name,DATE_FORMAT(occur_DATE , '%Y-%m-%d') ,DATE_FORMAT(RETURN_OPER_TIME , '%Y-%m-%d') , case when a.state = 'aborted' then 0 else -sum(quantity)  end as qty, "
+        f"case when a.state = 'aborted' then 0 else -sum(amount) end as csamt ,'return' as doctype"
+        f" from e_purchase_return  a,e_purchase_return_line b "
+        f" where a.bill_number = b.return_bill_number and a.state IN ( 'finished' ,'aborted')  "
+        f"and  occur_DATE >='{b_date}' and occur_DATE <='{e_date}' "
+        f"and supplier_code IN ({supplier_codes})"
+        f"group by bill_number,warehouse_code,supplier_code,supplier_name,occur_DATE,RETURN_OPER_TIME "
+        f"order by bill_number limit {start_index},{statement_page}")
+
+    print(sql_query)
+    # 连接数据库
+    connect_obj = dbconnect.db_connect()
+    if connect_obj is None:
+        write_log.write_log("supplierapp_api.get_bill_list:连接数据库失败")
+        return json.dumps({'status': -100, 'meg': '连接数据库失败，联系系统管理员'})
+    # 创建一个游标
+    connector = connect_obj.cursor()
+    # 执行查询出来的语句
+    try:
+        connector.execute(sql_query)
+    except connect_obj.Error as err:
+        print(f'执行SQL语句失败，联系系统管理员{err}')
+        write_log.write_log(f"supplierapp_api.get_bill_list:sql：{sql_query}。")
+        write_log.write_log(f"supplierapp_api.get_bill_list:执行语句失败：{err}。")
+        dbconnect.db_disconnect(connect_obj)
+        return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
+    # 获取返回行
+    results = connector.fetchall()
+    rows_count = len(results)
+    print("rows_count=", rows_count)
+    if rows_count < 1:
+        dbconnect.db_disconnect(connect_obj)
+        write_log.write_log("supplierapp_api.get_bill_list:无数据")
+        return json.dumps({"status": 0, "msg": "无数据！"})
+    cum_name = ["bill_number", "warehouse_code", "supplier_code", "supplier_name", "dist_date", "receipt_time", "qty",
+                "csamt", 'doctype']
+    result_dic = {'status': 1, 'msg': '查询成功', 'count': rows_count}
+    cum_list = []
+    for row in results:
+        temp = {}
+        for i in range(len(row)):
+            temp[cum_name[i]] = row[i]
+        cum_list.append(temp)
+    result_dic['bill'] = cum_list
+    dbconnect.db_disconnect(connect_obj)
+    write_log.write_log(f"supplierapp_api.get_bill_list:返回{result_dic}")
+    return result_dic
+
+
+# 根据查询时间段内对应供应商号 采购目录的所有有效商品
+# by lb 20240710
+def get_supplier_catalog_product(begin_date,end_date,supplier_code):
+
+    sql_query = f"""
+    select    DISTINCT b.product_code,b.product_name, b.supplier_code,b.supplier_name
+    from  e_purchase_catalog a,e_purchase_catalog_line  b
+    where a.uuid=b.purchase_catalog_uuid
+    and  b.supplier_code='{supplier_code}'
+    and a.begin_date<='{begin_date}'
+    and a.end_date>='{end_date}'
+    """
+    print(sql_query)
+    # 连接数据库
+    connect_obj = dbconnect.db_connect()
+    if connect_obj is None:
+        write_log.write_log("supplierapp_api.get_supplier_catalog_product:连接数据库失败")
+        return json.dumps({'status': -100, 'meg': '连接数据库失败，联系系统管理员'})
+    # 创建一个游标
+    connector = connect_obj.cursor()
+    # 执行查询出来的语句
+    try:
+        connector.execute(sql_query)
+    except connect_obj.Error as err:
+        print(f'执行SQL语句失败，联系系统管理员{err}')
+        write_log.write_log(f"supplierapp_api.get_supplier_catalog_product:sql：{sql_query}。")
+        write_log.write_log(f"supplierapp_api.get_supplier_catalog_product:执行语句失败：{err}。")
+        dbconnect.db_disconnect(connect_obj)
+        return json.dumps({'status': -200, 'meg': f'执行语句失败，联系系统管理员{err}'})
+    # 获取返回行
+    results = connector.fetchall()
+    rows_count = len(results)
+    if rows_count < 1:
+        dbconnect.db_disconnect(connect_obj)
+        write_log.write_log("supplierapp_api.get_supplier_catalog_product:无数据")
+        return json.dumps({"status": 0, "msg": "无数据！"})
+    cum_name = [description[0] for description in connector.description]  # 获取列名
+    result_dic = {'status': 1, 'msg': '查询成功', 'count': rows_count}
+    cum_list = []
+    for row in results:
+        temp = {}
+        for i in range(len(row)):
+            temp[cum_name[i]] = row[i]
+        cum_list.append(temp)
+    result_dic['product'] = cum_list
+    dbconnect.db_disconnect(connect_obj)
+    write_log.write_log(f"supplierapp_api.get_supplier_catalog_product:返回{result_dic}")
     return result_dic
